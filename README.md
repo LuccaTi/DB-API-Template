@@ -85,11 +85,14 @@ Este template vem configurado por padrão com o Entity Framework Core InMemory, 
 
 1. Pré-Requisito: Ter um Servidor SQL rodando  
 Para que essa conexão funcione, é necessário ter uma instância do SQL Server instalada:  
+
 • SQL Server Developer / Express: O programa tradicional do SQL Server instalado na sua máquina (onde usa-se o SQL Server Management Studio).
 
 2. Instalação dos Pacotes (NuGet)  
-Será preciso instalar pacotes específicos em dois projetos diferentes:  
+Será preciso instalar pacotes específicos em dois projetos diferentes: 
+
 • No projeto DBAPITemplate.Infrastructure instale o pacote Microsoft.EntityFrameworkCore.SqlServer. (Lembre-se de remover o pacote InMemory).  
+
 • No projeto DBAPITemplate.Api instale o pacote Microsoft.EntityFrameworkCore.Tools. (Esse pacote é quem permite que o console do Visual Studio entenda os comandos de Migrations).
 
 3. Configurar a Connection String (Appsettings)  
@@ -143,9 +146,12 @@ Abra o Package Manager Console (Console do Gerenciador de Pacotes) no Visual Stu
 2. Mude o escopo da janela do console (Default project) para DBAPITemplate.Infrastructure (pois é lá que o AppDbContext mora).
 
 3. Execute os comandos:  
+
 Comando 1: Add-Migration InitialCreate  
-• O que faz? O Entity Framework lê o AppDbContext e suas entidades (ex: Product), vê quais tabelas faltam e escreve um arquivo C# (Translation) contendo as instruções SQL necessárias para gerá-las. Esse comando não toca no banco ainda. É o planejamento.  
+-  O que faz?  
+O Entity Framework lê o AppDbContext e suas entidades (ex: Product), vê quais tabelas faltam e escreve um arquivo C# (Translation) contendo as instruções SQL necessárias para gerá-las. Esse comando não toca no banco ainda. É o planejamento.  
 
 Comando 2: Update-Database  
-• O que faz? Ele "aperta o botão verde". Ele pega todas as migrations que você gerou, conecta no seu SQL Server usando aquela ConnectionString que configuramos, cria o banco e cria as tabelas fisicamente.
+- O que faz?  
+Ele "aperta o botão verde". Ele pega todas as migrations que você gerou, conecta no seu SQL Server usando aquela ConnectionString que configuramos, cria o banco e cria as tabelas fisicamente.
 
