@@ -94,6 +94,7 @@ Será preciso instalar pacotes específicos em dois projetos diferentes:
 
 3. Configurar a Connection String (Appsettings)  
 A string de conexão define onde o banco está e qual usuário e senha devem ser usados. A melhor prática comercial é separar por ambiente:  
+
 • No appsettings.json (Base / Default):  
 Pode deixar vazio ou apontar para um banco local genérico:
 
@@ -104,10 +105,12 @@ Pode deixar vazio ou apontar para um banco local genérico:
 ```  
 • No appsettings.Development.json (Ambiente de Desenvolvimento):  
 Aqui geralmente fica o banco da própria máquina (LocalDB ou seu SQL Express). Os testes rodam mirando aqui.  
+
 • No appsettings.Production.json (Ambiente de Produção):  
 Geralmente não se coloca senhas cruas aqui por segurança! Em produção, a string vem através de variáveis de ambiente no Docker/Linux ou pelo Azure KeyVault.
 
 4. Atualizar o Program.cs  
+
 Vá no projeto da API, abra o Program.cs e localize aonde o contexto está sendo registrado em memória. Mude isto:
 
 ```csharp
@@ -145,4 +148,4 @@ Comando 1: Add-Migration InitialCreate
 
 Comando 2: Update-Database  
 • O que faz? Ele "aperta o botão verde". Ele pega todas as migrations que você gerou, conecta no seu SQL Server usando aquela ConnectionString que configuramos, cria o banco e cria as tabelas fisicamente.
----
+
