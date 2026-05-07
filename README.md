@@ -83,51 +83,46 @@ A API pode ser usada via console ao compilar o código e rodar o .exe, ou direta
 
 Este template vem configurado por padrão com o Entity Framework Core InMemory, visando facilitar testes rápidos e estudos sem a necessidade de infraestrutura pesada. Quando for evoluir a API para um projeto real que exige persistência de dados no disco, siga os passos abaixo para conectar a um banco SQL Server:
 
-1. Pré-Requisito: Ter um Servidor SQL rodando
-Para que essa conexão funcione, é necessário ter uma instância do SQL Server instalada:
+1. Pré-Requisito: Ter um Servidor SQL rodando  
+Para que essa conexão funcione, é necessário ter uma instância do SQL Server instalada:  
 • SQL Server Developer / Express: O programa tradicional do SQL Server instalado na sua máquina (onde usa-se o SQL Server Management Studio).
 
-2. Instalação dos Pacotes (NuGet)
-Será preciso instalar pacotes específicos em dois projetos diferentes:
-
-• No projeto DBAPITemplate.Infrastructure instale o pacote Microsoft.EntityFrameworkCore.SqlServer. (Lembre-se de remover o pacote InMemory).
-
+2. Instalação dos Pacotes (NuGet)  
+Será preciso instalar pacotes específicos em dois projetos diferentes:  
+• No projeto DBAPITemplate.Infrastructure instale o pacote Microsoft.EntityFrameworkCore.SqlServer. (Lembre-se de remover o pacote InMemory).  
 • No projeto DBAPITemplate.Api instale o pacote Microsoft.EntityFrameworkCore.Tools. (Esse pacote é quem permite que o console do Visual Studio entenda os comandos de Migrations).
 
-3. Configurar a Connection String (Appsettings)
-
-A string de conexão define onde o banco está e qual usuário e senha devem ser usados. A melhor prática comercial é separar por ambiente:
-
-• No appsettings.json (Base / Default):
+3. Configurar a Connection String (Appsettings)  
+A string de conexão define onde o banco está e qual usuário e senha devem ser usados. A melhor prática comercial é separar por ambiente:  
+• No appsettings.json (Base / Default):  
 Pode deixar vazio ou apontar para um banco local genérico:
 
 ```json
 "ConnectionStrings": {
       "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=DB_Template;Trusted_Connection=True;MultipleActiveResultSets=true"
     }
-```
-
-• No appsettings.Development.json (Ambiente de Desenvolvimento):
-Aqui geralmente fica o banco da própria máquina (LocalDB ou seu SQL Express). Os testes rodam mirando aqui.
-
-• No appsettings.Production.json (Ambiente de Produção):
+```  
+• No appsettings.Development.json (Ambiente de Desenvolvimento):  
+Aqui geralmente fica o banco da própria máquina (LocalDB ou seu SQL Express). Os testes rodam mirando aqui.  
+• No appsettings.Production.json (Ambiente de Produção):  
 Geralmente não se coloca senhas cruas aqui por segurança! Em produção, a string vem através de variáveis de ambiente no Docker/Linux ou pelo Azure KeyVault.
 
-4. Atualizar o Program.cs
+4. Atualizar o Program.cs  
 Vá no projeto da API, abra o Program.cs e localize aonde o contexto está sendo registrado em memória. Mude isto:
 
 ```csharp
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("DB_Template_Local"));
-```
+```  
+
 Para isto:
 
 ```csharp
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 ```
- 5. Executar as Migrations
-Como o SQL Server é um banco de dados relacional e fixo, não basta o código existir; o banco físico precisa ter as tabelas criadas exatamente como suas entidades do projeto Domain. É aí que entram as Migrations.
+5. Executar as Migrations  
+Como o SQL Server é um banco de dados relacional e fixo, não basta o código existir; o banco físico precisa ter as tabelas criadas exatamente como suas entidades do projeto Domain. É aí que entram as Migrations.  
 
 As migrations são arquivos de código que funcionam como um sistema de controle de versão para o esquema do banco de dados, permitindo criar, atualizar e reverter tabelas e colunas de forma automatizada e sincronizada com o código da aplicação. Elas traduzem as classes C# para comandos SQL, garantindo que o banco de dados evolua junto com o seu software sem a necessidade de intervenção manual direta no banco.
 
@@ -144,10 +139,10 @@ Abra o Package Manager Console (Console do Gerenciador de Pacotes) no Visual Stu
 
 2. Mude o escopo da janela do console (Default project) para DBAPITemplate.Infrastructure (pois é lá que o AppDbContext mora).
 
-3. Execute os comandos:
-Comando 1: Add-Migration InitialCreate
-• O que faz? O Entity Framework lê o AppDbContext e suas entidades (ex: Product), vê quais tabelas faltam e escreve um arquivo C# (Translation) contendo as instruções SQL necessárias para gerá-las. Esse comando não toca no banco ainda. É o planejamento.
+3. Execute os comandos:  
+Comando 1: Add-Migration InitialCreate  
+• O que faz? O Entity Framework lê o AppDbContext e suas entidades (ex: Product), vê quais tabelas faltam e escreve um arquivo C# (Translation) contendo as instruções SQL necessárias para gerá-las. Esse comando não toca no banco ainda. É o planejamento.  
 
-Comando 2: Update-Database
+Comando 2: Update-Database  
 • O que faz? Ele "aperta o botão verde". Ele pega todas as migrations que você gerou, conecta no seu SQL Server usando aquela ConnectionString que configuramos, cria o banco e cria as tabelas fisicamente.
 ---
