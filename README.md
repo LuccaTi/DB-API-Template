@@ -39,6 +39,9 @@ O projeto divide suas responsabilidades da seguinte forma:
 - src/DBAPITemplate.Infrastructure:
   - Responsabilidade: Implementação dos contratos e persistência (AppDbContext, EF Core). Usa o projeto Application como referência.
 
+- tests/DBAPITemplate.Application.Tests:
+  - Responsabilidade: Garantir a integridade da lógica de negócios e casos de uso através de testes de unidade automatizados (utilizando xUnit).
+
 ## Endpoints (Products)
 
 - GET /api/v1/Products

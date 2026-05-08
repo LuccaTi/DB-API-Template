@@ -19,6 +19,11 @@ namespace DBAPITemplate.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<Product?> GetByNameAsync(string name)
+        {
+            return await _context.Products.FirstOrDefaultAsync(p => p.Name == name);
+        }
+
         public async Task<Product> CreateAsync(Product product)
         {
             await _context.Products.AddAsync(product);

@@ -11,6 +11,7 @@ namespace DBAPITemplate.Application.Interfaces.Repositories
     {
         Task<IEnumerable<Product>> GetAllAsync();
         Task<Product?> GetByIdAsync(long id);
+        Task<Product?> GetByNameAsync(string name);
         Task<Product> CreateAsync(Product product);
         Task UpdateAsync(Product product);
         Task DeleteAsync(long id);

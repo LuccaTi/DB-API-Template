@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mapster;
 
 namespace DBAPITemplate.Application.Services
 {
@@ -38,9 +39,23 @@ namespace DBAPITemplate.Application.Services
             return _mapper.Map<ProductResponseDto>(product);
         }
 
+        private async Task<bool> EntityExists(string name)
+        {
+            var product = await _repository.GetByNameAsync(name);
+            if(product == null)
+                return false;
+
+            return true;
+        }
+
         public async Task<ProductResponseDto> CreateAsync(ProductRequestDto dto)
         {
+            var entityExists = await EntityExists(dto.Name);
+            if (entityExists)
+                throw new ConflictException($"Product '{dto.Name}' already exists.");
+
             var entity = _mapper.Map<Product>(dto);
+
             var createdEntity = await _repository.CreateAsync(entity);
             return _mapper.Map<ProductResponseDto>(createdEntity);
         }
