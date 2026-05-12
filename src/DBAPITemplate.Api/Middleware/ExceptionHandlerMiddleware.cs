@@ -1,10 +1,9 @@
 ﻿using DBAPITemplate.Domain.Exceptions;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
 using FluentValidation;
 
-namespace APITemplate.Host.Middleware
+namespace DBAPITemplate.Api.Middleware
 {
     public class ExceptionHandlerMiddleware
     {
@@ -25,48 +24,69 @@ namespace APITemplate.Host.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An unhandled exception has occurred: {ex.Message}");
-
                 var statusCode = HttpStatusCode.InternalServerError;
                 var message = "An internal server error has occured.";
+                object? errors = null;
+                var logLevel = LogLevel.Error;
 
-                IEnumerable<string>? errors = null;
-
-                if (ex is HttpRequestException httpRequestException)
+                if (ex is OperationCanceledException)
+                {
+                    statusCode = (HttpStatusCode)499;
+                    message = "Client closed the request.";
+                    logLevel = LogLevel.Information;
+                }
+                else if (ex is FluentValidation.ValidationException validationException)
+                {
+                    statusCode = HttpStatusCode.BadRequest;
+                    message = "One or more validation errors occurred.";
+                    errors = validationException.Errors
+                        .GroupBy(e => e.PropertyName)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(e => e.ErrorMessage).ToArray()
+                        );
+                    logLevel = LogLevel.Warning;
+                }
+                else if (ex is HttpRequestException httpRequestException)
                 {
                     statusCode = httpRequestException.StatusCode ?? HttpStatusCode.BadGateway;
                     message = httpRequestException.Message;
                 }
-
-                if (ex is NotFoundException notFoundException)
+                else if (ex is NotFoundException notFoundException)
                 {
                     statusCode = HttpStatusCode.NotFound;
                     message = notFoundException.Message;
                 }
-
-                if (ex is InvalidIdException invalidIdException)
+                else if (ex is InvalidIdException invalidIdException)
                 {
                     statusCode = HttpStatusCode.BadRequest;
                     message = invalidIdException.Message;
+                    logLevel = LogLevel.Warning;
                 }
-
-                if (ex is InvalidResourceException invalidResourceException)
+                else if (ex is InvalidResourceException invalidResourceException)
                 {
                     statusCode = HttpStatusCode.BadRequest;
                     message = invalidResourceException.Message;
+                    logLevel = LogLevel.Warning;
                 }
-
-                if (ex is ConflictException conflictException)
+                else if (ex is ConflictException conflictException)
                 {
                     statusCode = HttpStatusCode.Conflict;
                     message = conflictException.Message;
+                    logLevel = LogLevel.Warning;
                 }
 
-                if (ex is FluentValidation.ValidationException validationException)
+                if (logLevel == LogLevel.Error)
                 {
-                    statusCode = HttpStatusCode.BadRequest;
-                    message = "One or more validation errors occurred.";
-                    errors = validationException.Errors.Select(e => e.ErrorMessage);
+                    _logger.LogError(ex, "An unhandled exception has occured: {Message}", ex.Message);
+                }
+                else if (logLevel == LogLevel.Warning)
+                {
+                    _logger.LogWarning("A business/validation issue occurred: {Message}", ex.Message);
+                }
+                else
+                {
+                    _logger.LogInformation("Operation was cancelled or ended early: {Message}", ex.Message);
                 }
 
                 context.Response.ContentType = "application/json";

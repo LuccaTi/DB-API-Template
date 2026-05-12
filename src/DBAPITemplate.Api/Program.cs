@@ -75,7 +75,7 @@ namespace APITemplate.Host
 
                 #region Middleware
 
-                app.UseMiddleware<APITemplate.Host.Middleware.ExceptionHandlerMiddleware>();
+                app.UseMiddleware<DBAPITemplate.Api.Middleware.ExceptionHandlerMiddleware>();
                 Log.Debug("ExceptionHandlerMiddleware added");
 
                 app.UseStaticFiles();
