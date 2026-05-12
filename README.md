@@ -4,7 +4,7 @@
 
 Este repositório contém um template de API REST orientada a banco de dados construída com ASP.NET Core (.NET 8). O projeto já vem estruturado com injeção de dependência, logging com Serilog, configuração via appsettings.json, persistência de dados utilizando Entity Framework Core e Swagger opcional para documentação e testes.
 
-O propósito é criar um "esqueleto" de Web APIs especializado em operações CRUD e acesso direto a banco de dados, servindo como padrão de implementação limpa e escalável.
+O propósito é criar um "esqueleto" de APIs especializado em operações CRUD e acesso direto a banco de dados, servindo como padrão de implementação limpa e escalável.
 
 Endpoints de exemplo disponíveis (Entidade Product):
 
@@ -19,6 +19,7 @@ Endpoints de exemplo disponíveis (Entidade Product):
 - .NET 8 (ASP.NET Core)
 - Entity Framework Core: ORM responsável pela persistência e consultas no banco de dados.
 - Mapster: Biblioteca de alta performance para mapear objetos de domínio para DTOs (adotada no lugar do AutoMapper para maior escalabilidade comercial).
+- FluentValidation: Biblioteca para construção de regras de validação consistentes e fortemente tipadas para os DTOs.
 - Swashbuckle.AspNetCore (Swagger/OpenAPI)
 - Microsoft.Extensions.Configuration: Leitura de configurações.
 - Serilog: Escrita estruturada em arquivos e console de Log.
@@ -31,7 +32,7 @@ O projeto divide suas responsabilidades da seguinte forma:
   - Responsabilidade: Camada de Apresentação e ponto de entrada (Program.cs, .exe). Centraliza a injeção de dependências e expõe os endpoints via Controllers. Usa os projetos Application e Infrastructure como referência.
 
 - src/DBAPITemplate.Application:
-  - Responsabilidade: Casos de uso da aplicação. Contém abstrações de serviços, Mappers (Mapster) e DTOs de transporte que fluem de e para a API. Usa o projeto Domain como referência.
+  - Responsabilidade: Casos de uso da aplicação. Contém abstrações de serviços, validações fluentes (FluentValidation), métodos de extensão, Mappers (Mapster) e DTOs de transporte que fluem de e para a API. Usa o projeto Domain como referência.
 
 - src/DBAPITemplate.Domain:
   - Responsabilidade: Entidades de núcleo (como Product), regras de negócio absolutas e exceções de uso geral (NotFoundException, ConflictException, etc).

@@ -7,14 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DBAPITemplate.Application.Mappers
+namespace DBAPITemplate.Application.Mappers.Product
 {
     public class ProductMapperRegister : IRegister
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<ProductRequestDto, Product>();
-            config.NewConfig<Product, ProductResponseDto>();
+            config.NewConfig<ProductRequestDto, DBAPITemplate.Domain.Entities.Product>();
+            config.NewConfig<DBAPITemplate.Domain.Entities.Product, ProductResponseDto>();
         }
     }
 }

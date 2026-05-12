@@ -18,35 +18,36 @@ namespace DBAPITemplate.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
         {
-            return Ok(await _service.GetAllAsync());
+            return Ok(await _service.GetAllAsync(cancellationToken));
         }
 
         [HttpGet("{id}", Name = nameof(GetByIdAsync))]
-        public async Task<IActionResult> GetByIdAsync(long id)
+        public async Task<IActionResult> GetByIdAsync(long id, CancellationToken cancellationToken)
         {
-            return Ok(await _service.GetByIdAsync(id));
+            var request = new GetProductByIdRequestDto { Id = id };
+            return Ok(await _service.GetByIdAsync(request, cancellationToken));
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] ProductRequestDto dto)
+        public async Task<IActionResult> CreateAsync([FromBody] ProductRequestDto dto, CancellationToken cancellationToken)
         {
-            var result = await _service.CreateAsync(dto);
+            var result = await _service.CreateAsync(dto, cancellationToken);
             return CreatedAtRoute(nameof(GetByIdAsync), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(long id, [FromBody] ProductRequestDto dto)
+        public async Task<IActionResult> UpdateAsync(long id, [FromBody] ProductRequestDto dto, CancellationToken cancellationToken)
         {
-            await _service.UpdateAsync(id, dto);
+            await _service.UpdateAsync(id, dto, cancellationToken);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleleAsync(long id)
+        public async Task<IActionResult> DeleteAsync(long id, CancellationToken cancellationToken)
         {
-            await _service.DeleteAsync(id);
+            await _service.DeleteAsync(id, cancellationToken);
             return NoContent();
         }
     }

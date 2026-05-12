@@ -1,6 +1,8 @@
 ﻿using DBAPITemplate.Domain.Exceptions;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
+using FluentValidation;
 
 namespace APITemplate.Host.Middleware
 {
@@ -28,7 +30,9 @@ namespace APITemplate.Host.Middleware
                 var statusCode = HttpStatusCode.InternalServerError;
                 var message = "An internal server error has occured.";
 
-                if(ex is HttpRequestException httpRequestException)
+                IEnumerable<string>? errors = null;
+
+                if (ex is HttpRequestException httpRequestException)
                 {
                     statusCode = httpRequestException.StatusCode ?? HttpStatusCode.BadGateway;
                     message = httpRequestException.Message;
@@ -58,16 +62,26 @@ namespace APITemplate.Host.Middleware
                     message = conflictException.Message;
                 }
 
+                if (ex is FluentValidation.ValidationException validationException)
+                {
+                    statusCode = HttpStatusCode.BadRequest;
+                    message = "One or more validation errors occurred.";
+                    errors = validationException.Errors.Select(e => e.ErrorMessage);
+                }
+
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)statusCode;
 
                 var response = new
                 {
                     StatusCode = context.Response.StatusCode,
-                    Message = message
+                    Message = message,
+                    Errors = errors
                 };
 
-                var jsonResponse = JsonSerializer.Serialize(response);
+                var jsonOptions = new JsonSerializerOptions { DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull };
+
+                var jsonResponse = JsonSerializer.Serialize(response, jsonOptions);
                 await context.Response.WriteAsync(jsonResponse);
             }
         }

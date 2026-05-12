@@ -2,7 +2,6 @@ using Mapster;
 using MapsterMapper;
 using DBAPITemplate.Application.Interfaces.Repositories;
 using DBAPITemplate.Application.Interfaces.Services;
-using DBAPITemplate.Application.Services;
 using DBAPITemplate.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +10,10 @@ using Serilog;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using FluentValidation;
+using DBAPITemplate.Application.Mappers.Product;
+using DBAPITemplate.Application.Services.Product;
+using DBAPITemplate.Application.Validations.Product;
 
 namespace APITemplate.Host
 {
@@ -47,11 +50,14 @@ namespace APITemplate.Host
                 builder.Services.AddScoped<IProductRepository, ProductRepository>();
                 Log.Information("Repositories scope added");
 
+                builder.Services.AddValidatorsFromAssemblyContaining<GetProductByIdRequestValidator>();
+                Log.Information("Fluent validation added");
+
                 builder.Services.AddScoped<IProductService, ProductService>();
                 Log.Information("Services scope added");
 
                 var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
-                typeAdapterConfig.Scan(typeof(DBAPITemplate.Application.Mappers.ProductMapperRegister).Assembly);
+                typeAdapterConfig.Scan(typeof(ProductMapperRegister).Assembly);
                 builder.Services.AddSingleton(typeAdapterConfig);
                 builder.Services.AddScoped<IMapper, ServiceMapper>();
                 Log.Information("Mapster added");

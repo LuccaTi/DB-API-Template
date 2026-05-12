@@ -19,42 +19,42 @@ namespace DBAPITemplate.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Product?> GetByNameAsync(string name)
+        public async Task<Product?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
-            return await _context.Products.FirstOrDefaultAsync(p => p.Name == name);
+            return await _context.Products.FirstOrDefaultAsync(p => p.Name == name, cancellationToken);
         }
 
-        public async Task<Product> CreateAsync(Product product)
+        public async Task<Product> CreateAsync(Product product, CancellationToken cancellationToken = default)
         {
-            await _context.Products.AddAsync(product);
-            await _context.SaveChangesAsync();
+            await _context.Products.AddAsync(product, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
             return product;
         }
 
-        public async Task DeleteAsync(long id)
+        public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.FindAsync(new object[] { id }, cancellationToken);
             if(product != null)
             {
                 _context.Products.Remove(product);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
             }
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
+        public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products.ToListAsync(cancellationToken);
         }
 
-        public async Task<Product?> GetByIdAsync(long id)
+        public async Task<Product?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
         {
-            return await _context.Products.FindAsync(id);
+            return await _context.Products.FindAsync(new object[] { id }, cancellationToken);
         }
 
-        public async Task UpdateAsync(Product product)
+        public async Task UpdateAsync(Product product, CancellationToken cancellationToken = default)
         {
             _context.Products.Update(product);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

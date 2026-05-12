@@ -9,10 +9,10 @@ namespace DBAPITemplate.Application.Interfaces.Services
 {
     public interface IProductService
     {
-        Task<IEnumerable<ProductResponseDto>> GetAllAsync();
-        Task<ProductResponseDto> GetByIdAsync(long id);
-        Task<ProductResponseDto> CreateAsync(ProductRequestDto dto);
-        Task UpdateAsync(long id, ProductRequestDto dto);
-        Task DeleteAsync(long id);
+        Task<IEnumerable<ProductResponseDto>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<ProductResponseDto> GetByIdAsync(GetProductByIdRequestDto request, CancellationToken cancellationToken = default);
+        Task<ProductResponseDto> CreateAsync(ProductRequestDto dto, CancellationToken cancellationToken = default);
+        Task UpdateAsync(long id, ProductRequestDto dto, CancellationToken cancellationToken = default);
+        Task DeleteAsync(long id, CancellationToken cancellationToken = default);
     }
 }

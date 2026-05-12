@@ -9,11 +9,11 @@ namespace DBAPITemplate.Application.Interfaces.Repositories
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<Product>> GetAllAsync();
-        Task<Product?> GetByIdAsync(long id);
-        Task<Product?> GetByNameAsync(string name);
-        Task<Product> CreateAsync(Product product);
-        Task UpdateAsync(Product product);
-        Task DeleteAsync(long id);
+        Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<Product?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+        Task<Product?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+        Task<Product> CreateAsync(Product product, CancellationToken cancellationToken = default);
+        Task UpdateAsync(Product product, CancellationToken cancellationToken = default);
+        Task DeleteAsync(long id, CancellationToken cancellationToken = default);
     }
 }

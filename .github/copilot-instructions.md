@@ -11,4 +11,5 @@
 - Nomeie testes de forma descritiva: MethodName_StateUnderTest_ExpectedBehavior.
 - Mantenha Application e Domain fáceis de testar: evite dependências estáticas e use injeção de dependência.
 - Prefira testar lógica de negócio em unit tests; reserve integração para verificar contratos entre camadas e middleware.
+- Em projetos .NET, use CancellationToken de ponta a ponta (Controller -> Service -> Repository -> EF Core) como último parâmetro com valor padrão (CancellationToken cancellationToken = default). Nos testes unitários com Moq, valide o 'plumbing' passando um CancellationToken explícito em vez de It.IsAny<CancellationToken>().
 - Em projetos .NET, utilizar sempre CancellationToken de ponta a ponta (Controller -> Service -> Repository -> EF Core) como último parâmetro (cancellationToken = default). Nos testes unitários com Moq, validar o 'plumbing' passando um token explícito em vez de It.IsAny<CancellationToken>().
