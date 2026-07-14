@@ -22,14 +22,10 @@ namespace APITemplate.Host
         public static void Main(string[] args)
         {
             var loggerConfiguration = new LoggerConfiguration()
-                .ReadFrom.Configuration(new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .Build())
-                .Enrich.FromLogContext()
-                .WriteTo.File(Path.Combine(AppContext.BaseDirectory, "logs/system_log_.txt"),
-                rollingInterval: RollingInterval.Day,
-                retainedFileCountLimit: null,
-                shared: true);
+            .ReadFrom.Configuration(new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+            .Build());
 
             Log.Logger = loggerConfiguration.CreateBootstrapLogger();
             Log.Information("DB API Template, Starting up");
