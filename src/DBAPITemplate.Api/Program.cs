@@ -15,7 +15,7 @@ using DBAPITemplate.Application.Mappers.Product;
 using DBAPITemplate.Application.Services.Product;
 using DBAPITemplate.Application.Validations.Product;
 
-namespace APITemplate.Host
+namespace DBAPITemplate.Api
 {
     public class Program
     {
